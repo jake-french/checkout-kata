@@ -18,8 +18,15 @@ public class Checkout(IEnumerable<Product> products) : ICheckout
         return true;
     }
 
-    public int GetTotalPrice()
+    public int GetTotalPrice() => _quantityLookup.Sum(kv =>
     {
-        return _quantityLookup.Sum(kv => kv.Value * _productLookup[kv.Key].Price);
-    }
+        var product = _productLookup[kv.Key];
+        if (product.QuantityForOffer is null || product.OfferPrice is null)
+            return kv.Value * _productLookup[kv.Key].Price;
+        
+        var offerCount = kv.Value / product.QuantityForOffer.Value;
+        var remainder = kv.Value % product.QuantityForOffer.Value;
+            
+        return offerCount * product.OfferPrice.Value + remainder * product.Price;
+    });
 }

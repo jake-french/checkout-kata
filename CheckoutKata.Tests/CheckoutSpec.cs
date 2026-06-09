@@ -41,6 +41,33 @@ public class CheckoutSpec
     }
 
     [Fact]
+    public void GetCorrectPrice_When_ItemsScanned_With_ApplicableOffers()
+    {
+        var checkout = new Checkout([new Product("A", 50, 2, 90)]);
+        
+        Assert.True(checkout.TryScan("A"));
+        Assert.True(checkout.TryScan("A"));
+        
+        var result = checkout.GetTotalPrice();
+        
+        Assert.Equal(90, result);
+    }
+
+    [Fact]
+    public void GetCorrectPrice_When_ItemsScanned_With_ApplicableOffers_And_Overflow()
+    {
+        var checkout = new Checkout([new Product("A", 50, 2, 90)]);
+        
+        Assert.True(checkout.TryScan("A"));
+        Assert.True(checkout.TryScan("A"));
+        Assert.True(checkout.TryScan("A"));
+        
+        var result = checkout.GetTotalPrice();
+        
+        Assert.Equal(140, result);
+    }
+
+    [Fact]
     public void GetCorrectPrice_When_InvalidItemScanned()
     {
         var checkout = new Checkout([new Product("A", 50)]);
