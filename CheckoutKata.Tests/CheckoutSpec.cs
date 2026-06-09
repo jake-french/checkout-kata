@@ -5,6 +5,12 @@ namespace CheckoutKata.Tests;
 
 public class CheckoutSpec
 {
+    private static readonly List<Product> _products = [
+        new ("A", 50, 2, 90),
+        new ("B", 30, 3, 60),
+        new ("C", 20, 2, 30)
+    ];
+    
     [Fact]
     public void GetCorrectPrice_When_NoItemsScanned()
     {
@@ -15,35 +21,44 @@ public class CheckoutSpec
         Assert.Equal(0, result);
     }
 
-    [Fact]
-    public void GetCorrectPrice_When_SingleItemScanned()
+    [Theory]
+    [
+        InlineData("A", 50),
+        InlineData("B", 30)
+    ]
+    public void GetCorrectPrice_When_SingleItemScanned(string sku, int expectedPrice)
     {
-        var checkout = new Checkout([new Product("A", 50)]);
+        var checkout = new Checkout(_products);
 
-        Assert.True(checkout.TryScan("A"));
+        Assert.True(checkout.TryScan(sku));
 
         var result = checkout.GetTotalPrice();
 
-        Assert.Equal(50, result);
+        Assert.Equal(expectedPrice, result);
     }
 
-    [Fact]
-    public void GetCorrectPrice_When_MultipleItemsScanned()
+    [Theory]
+    [
+        InlineData(80, "A", "B"),
+        InlineData(50, "C", "B"),
+        InlineData(80, "B", "C", "B")
+    ]
+    public void GetCorrectPrice_When_MultipleItemsScanned(int expectedPrice, params string[] skus)
     {
-        var checkout = new Checkout([new Product("A", 50), new Product("B", 30)]);
+        var checkout = new Checkout(_products);
 
-        Assert.True(checkout.TryScan("A"));
-        Assert.True(checkout.TryScan("B"));
+        foreach (var sku in skus)
+            Assert.True(checkout.TryScan(sku));
 
         var result = checkout.GetTotalPrice();
 
-        Assert.Equal(80, result);
+        Assert.Equal(expectedPrice, result);
     }
 
     [Fact]
     public void GetCorrectPrice_When_ItemsScanned_With_ApplicableOffers()
     {
-        var checkout = new Checkout([new Product("A", 50, 2, 90)]);
+        var checkout = new Checkout(_products);
 
         Assert.True(checkout.TryScan("A"));
         Assert.True(checkout.TryScan("A"));
@@ -56,7 +71,7 @@ public class CheckoutSpec
     [Fact]
     public void GetCorrectPrice_When_ItemsScanned_With_ApplicableOffers_And_Overflow()
     {
-        var checkout = new Checkout([new Product("A", 50, 2, 90)]);
+        var checkout = new Checkout(_products);
 
         Assert.True(checkout.TryScan("A"));
         Assert.True(checkout.TryScan("A"));
@@ -70,7 +85,7 @@ public class CheckoutSpec
     [Fact]
     public void GetCorrectPrice_When_ItemsScanned_With_ApplicableOffers_MultipleTimes()
     {
-        var checkout = new Checkout([new Product("A", 50, 2, 90)]);
+        var checkout = new Checkout(_products);
 
         for (var i = 0; i < 6; i++) // Scan 6 times
             Assert.True(checkout.TryScan("A"));
@@ -83,7 +98,7 @@ public class CheckoutSpec
     [Fact]
     public void GetCorrectPrice_When_ItemsScanned_With_ApplicableOffers_AnyOrder()
     {
-        var checkout = new Checkout([new Product("A", 50, 2, 90), new Product("B", 30, 3, 60)]);
+        var checkout = new Checkout(_products);
 
         Assert.True(checkout.TryScan("A"));
         Assert.True(checkout.TryScan("B"));
@@ -100,8 +115,8 @@ public class CheckoutSpec
     [Fact]
     public void GetCorrectPrice_When_InvalidItemScanned()
     {
-        var checkout = new Checkout([new Product("A", 50)]);
-        Assert.False(checkout.TryScan("B"));
+        var checkout = new Checkout(_products);
+        Assert.False(checkout.TryScan("Z"));
 
         var result = checkout.GetTotalPrice();
         Assert.Equal(0, result);
@@ -113,7 +128,7 @@ public class CheckoutSpec
     [InlineData("")]
     public void GetCorrectPrice_When_InvalidStringGiven(string input)
     {
-        var checkout = new Checkout([new Product("A", 50)]);
+        var checkout = new Checkout(_products);
         Assert.False(checkout.TryScan(input));
 
         var result = checkout.GetTotalPrice();
