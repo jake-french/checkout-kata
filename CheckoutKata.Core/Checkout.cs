@@ -10,6 +10,7 @@ public class Checkout(IEnumerable<Product> products) : ICheckout
     
     public bool TryScan(string sku)
     {
+        if (string.IsNullOrWhiteSpace(sku)) return false;
         if (!_productLookup.ContainsKey(sku)) return false;
         
         if (!_quantityLookup.TryAdd(sku, 1))

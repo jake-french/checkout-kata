@@ -9,34 +9,34 @@ public class CheckoutSpec
     public void GetCorrectPrice_When_NoItemsScanned()
     {
         var checkout = new Checkout([]);
-        
+
         var result = checkout.GetTotalPrice();
-        
+
         Assert.Equal(0, result);
     }
-    
+
     [Fact]
     public void GetCorrectPrice_When_SingleItemScanned()
     {
         var checkout = new Checkout([new Product("A", 50)]);
-        
+
         Assert.True(checkout.TryScan("A"));
-        
+
         var result = checkout.GetTotalPrice();
-        
+
         Assert.Equal(50, result);
     }
-    
+
     [Fact]
     public void GetCorrectPrice_When_MultipleItemsScanned()
     {
         var checkout = new Checkout([new Product("A", 50), new Product("B", 30)]);
-        
+
         Assert.True(checkout.TryScan("A"));
         Assert.True(checkout.TryScan("B"));
-        
+
         var result = checkout.GetTotalPrice();
-        
+
         Assert.Equal(80, result);
     }
 
@@ -44,12 +44,12 @@ public class CheckoutSpec
     public void GetCorrectPrice_When_ItemsScanned_With_ApplicableOffers()
     {
         var checkout = new Checkout([new Product("A", 50, 2, 90)]);
-        
+
         Assert.True(checkout.TryScan("A"));
         Assert.True(checkout.TryScan("A"));
-        
+
         var result = checkout.GetTotalPrice();
-        
+
         Assert.Equal(90, result);
     }
 
@@ -57,13 +57,13 @@ public class CheckoutSpec
     public void GetCorrectPrice_When_ItemsScanned_With_ApplicableOffers_And_Overflow()
     {
         var checkout = new Checkout([new Product("A", 50, 2, 90)]);
-        
+
         Assert.True(checkout.TryScan("A"));
         Assert.True(checkout.TryScan("A"));
         Assert.True(checkout.TryScan("A"));
-        
+
         var result = checkout.GetTotalPrice();
-        
+
         Assert.Equal(140, result);
     }
 
@@ -71,12 +71,12 @@ public class CheckoutSpec
     public void GetCorrectPrice_When_ItemsScanned_With_ApplicableOffers_MultipleTimes()
     {
         var checkout = new Checkout([new Product("A", 50, 2, 90)]);
-        
-        for (var i = 0; i < 6; i++)         // Scan 6 times
+
+        for (var i = 0; i < 6; i++) // Scan 6 times
             Assert.True(checkout.TryScan("A"));
-        
+
         var result = checkout.GetTotalPrice();
-        
+
         Assert.Equal(270, result);
     }
 
@@ -85,8 +85,22 @@ public class CheckoutSpec
     {
         var checkout = new Checkout([new Product("A", 50)]);
         Assert.False(checkout.TryScan("B"));
-        
+
         var result = checkout.GetTotalPrice();
         Assert.Equal(0, result);
     }
+
+#pragma warning disable xUnit1012
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    public void GetCorrectPrice_When_InvalidStringGiven(string input)
+    {
+        var checkout = new Checkout([new Product("A", 50)]);
+        Assert.False(checkout.TryScan(input));
+
+        var result = checkout.GetTotalPrice();
+        Assert.Equal(0, result);
+    }
+#pragma warning restore xUnit1012
 }
