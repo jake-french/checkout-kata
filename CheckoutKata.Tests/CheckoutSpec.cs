@@ -68,6 +68,19 @@ public class CheckoutSpec
     }
 
     [Fact]
+    public void GetCorrectPrice_When_ItemsScanned_With_ApplicableOffers_MultipleTimes()
+    {
+        var checkout = new Checkout([new Product("A", 50, 2, 90)]);
+        
+        for (var i = 0; i < 6; i++)         // Scan 6 times
+            Assert.True(checkout.TryScan("A"));
+        
+        var result = checkout.GetTotalPrice();
+        
+        Assert.Equal(270, result);
+    }
+
+    [Fact]
     public void GetCorrectPrice_When_InvalidItemScanned()
     {
         var checkout = new Checkout([new Product("A", 50)]);
