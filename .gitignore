@@ -1,0 +1,61 @@
+## =======================================================================
+## JetBrains Rider / IntelliJ Specific Rules
+## =======================================================================
+.idea/
+*.sln.iml
+*.suo
+*.user
+*.userosscache
+*.sln.docusers
+
+# Exclude Rider workspace settings but keep shared run configurations (optional)
+!.idea/runConfigurations/
+!.idea/vcs.xml
+!.idea/indexLayout.xml
+
+## =======================================================================
+## .NET Core / .NET Framework Rules
+## =======================================================================
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Re]leases/
+x64/
+x86/
+build/
+bld/
+bin/
+obj/
+
+# Roslyn cache
+.妥/
+
+# dotnet tools / local workloads
+.dotnet/
+.tools/
+
+# User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docusers
+
+# User-specific files (MonoDevelop/Xamarin Studio)
+*.userprefs
+
+# Mono auto-generated files
+mono_crash.*
+
+# Windows / Mac metadata
+Thumbs.db
+.DS_Store
+
+## =======================================================================
+## Environment and Secrets
+## =======================================================================
+appsettings.Development.json
+appsettings.Local.json
+*.secrets.json
+.env
