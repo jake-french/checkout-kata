@@ -18,4 +18,8 @@
         <Using Include="Xunit"/>
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\CheckoutKata.Core\CheckoutKata.Core.csproj" />
+    </ItemGroup>
+
 </Project>
