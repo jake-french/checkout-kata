@@ -81,6 +81,23 @@ public class CheckoutSpec
     }
 
     [Fact]
+    public void GetCorrectPrice_When_ItemsScanned_With_ApplicableOffers_AnyOrder()
+    {
+        var checkout = new Checkout([new Product("A", 50, 2, 90), new Product("B", 30, 3, 60)]);
+
+        Assert.True(checkout.TryScan("A"));
+        Assert.True(checkout.TryScan("B"));
+        Assert.True(checkout.TryScan("A"));
+        Assert.True(checkout.TryScan("B"));
+        Assert.True(checkout.TryScan("B"));
+        Assert.True(checkout.TryScan("A"));
+
+        var result = checkout.GetTotalPrice();
+
+        Assert.Equal(200, result);
+    }
+
+    [Fact]
     public void GetCorrectPrice_When_InvalidItemScanned()
     {
         var checkout = new Checkout([new Product("A", 50)]);
